@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicConverter", "DynamicConverter\DynamicConverter.csproj", "{0A23E87E-A50B-4719-A5E5-B2CA60A539CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemTextJson.DynamicConverter", "SystemTextJson.DynamicConverter\SystemTextJson.DynamicConverter.csproj", "{0A23E87E-A50B-4719-A5E5-B2CA60A539CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicConverter.Test", "DynamicConverter.Test\DynamicConverter.Test.csproj", "{EF7E197C-7EB3-45EA-9857-50538D1CFA9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemTextJson.DynamicConverter.Test", "SystemTextJson.DynamicConverter.Test\SystemTextJson.DynamicConverter.Test.csproj", "{EF7E197C-7EB3-45EA-9857-50538D1CFA9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

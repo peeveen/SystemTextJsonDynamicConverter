@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace DynamicConverter.Test;
+namespace SystemTextJson.DynamicConverter.Test;
 
 [TestClass]
 public class Tests {
@@ -20,7 +20,7 @@ public class Tests {
 		public string? Property1 { get; set; }
 		[JsonInclude]
 		[JsonPropertyName("dynamicData")]
-		[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJsonDynamicConverter.DynamicConverter))]
+		[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.DynamicConverter.Converter))]
 		public dynamic? DynamicData { get; set; }
 		[JsonInclude]
 		[JsonPropertyName("property2")]

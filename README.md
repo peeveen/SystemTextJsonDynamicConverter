@@ -8,7 +8,7 @@ class MyClass {
 	... etc ...
 
 	[JsonInclude]
-	[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJsonDynamicConverter.DynamicConverter))]
+	[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.DynamicConverter.Converter))]
 	public dynamic MyDynamicData { get; set; }
 
 	... etc ...

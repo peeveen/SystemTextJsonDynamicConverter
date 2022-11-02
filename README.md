@@ -15,6 +15,6 @@ class MyClass {
 
 }
 
-var result = JsonSerializer.Deserialize<MyClass>(json)
+var result = JsonSerializer.Deserialize<MyClass>(json);
 var val = result.MyDynamicData.some._dynamic.property.somewhere;
 ```

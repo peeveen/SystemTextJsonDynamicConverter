@@ -1,0 +1,88 @@
+{
+	"property1": "something",
+	"dynamicData": {
+		"booleanTrueTest": true,
+		"booleanFalseTest": false,
+		"integerTest": 1234,
+		"floatTest": 123.4,
+		"stringTest": "abcd",
+		"nullTest": null,
+		"numberArrayTest": [1, 2, 3, 4],
+		"stringArrayTest": ["a", "b", "c", "d"],
+		"booleanArrayTest": [true, false, true, false],
+		"objectArrayTest": [
+			{ "property": "thing1" },
+			{ "property": "thing2" },
+			{ "property": "thing3" },
+			{ "property": "thing4" }
+		],
+		"nestedArrayTest": [
+			[1, 2, 3, 4],
+			["a", "b", "c", "d"],
+			[true, false, true, false],
+			[
+				{ "property": "thing1" },
+				{ "property": "thing2" },
+				{ "property": "thing3" },
+				{ "property": "thing4" }
+			]
+		],
+		"objectTest": {
+			"booleanTrueTest": true,
+			"booleanFalseTest": false,
+			"integerTest": 1234,
+			"floatTest": 123.4,
+			"stringTest": "abcd",
+			"nullTest": null,
+			"numberArrayTest": [1, 2, 3, 4],
+			"stringArrayTest": ["a", "b", "c", "d"],
+			"booleanArrayTest": [true, false, true, false],
+			"objectArrayTest": [
+				{ "property": "thing1" },
+				{ "property": "thing2" },
+				{ "property": "thing3" },
+				{ "property": "thing4" }
+			],
+			"nestedArrayTest": [
+				[1, 2, 3, 4],
+				["a", "b", "c", "d"],
+				[true, false, true, false],
+				[
+					{ "property": "thing1" },
+					{ "property": "thing2" },
+					{ "property": "thing3" },
+					{ "property": "thing4" }
+				]
+			],
+			"nestedObjectTest": {
+				"booleanTrueTest": true,
+				"booleanFalseTest": false,
+				"integerTest": 1234,
+				"floatTest": 123.4,
+				"stringTest": "abcd",
+				"nullTest": null,
+				"numberArrayTest": [1, 2, 3, 4],
+				"stringArrayTest": ["a", "b", "c", "d"],
+				"booleanArrayTest": [true, false, true, false],
+				"objectArrayTest": [
+					{ "property": "thing1" },
+					{ "property": "thing2" },
+					{ "property": "thing3" },
+					{ "property": "thing4" }
+				],
+				"nestedArrayTest": [
+					[1, 2, 3, 4],
+					["a", "b", "c", "d"],
+					[true, false, true, false],
+					[
+						{ "property": "thing1" },
+						{ "property": "thing2" },
+						{ "property": "thing3" },
+						{ "property": "thing4" }
+					]
+				]
+			}
+		}
+	},
+	"property2": "somethingElse"
+}

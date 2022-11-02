@@ -2,6 +2,11 @@
 
 Deserialize data into a `dynamic` type when using `System.Text.Json`.
 
+- .NET Standard 2.0 compatible
+- [Available from nuget.org](https://www.nuget.org/packages/SystemTextJson.DynamicConverter)
+
+## Usage
+
 ```csharp
 class MyClass {
 

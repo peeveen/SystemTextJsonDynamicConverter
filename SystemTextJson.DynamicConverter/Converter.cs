@@ -40,26 +40,24 @@ namespace SystemTextJson.DynamicConverter {
 				switch (tokenType) {
 					case JsonTokenType.StartArray:
 						var list = new List<dynamic>();
-						if (reader.Read())
-							for (; (tokenType = reader.TokenType) != JsonTokenType.EndArray; reader.Read()) {
-								var arrayNextToken = reader.TokenType;
-								if (arrayNextToken != JsonTokenType.EndArray)
-									list.Add(ReadDynamicJsonObject(ref reader, options));
-							}
-						else throwNotEnoughJsonException(tokenType);
+						while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+							list.Add(ReadDynamicJsonObject(ref reader, options));
+						// If we ended with something other than an EndArray, we've run out of JSON.
+						if (reader.TokenType != JsonTokenType.EndArray)
+							throwNotEnoughJsonException(tokenType);
 						return list.ToArray();
 					case JsonTokenType.StartObject:
 						var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
-						if (reader.Read())
-							for (; (tokenType = reader.TokenType) != JsonTokenType.EndObject; reader.Read()) {
-								// MUST be PropertyName
-								Debug.Assert(tokenType == JsonTokenType.PropertyName, $"The token immediately following StartObject *must* be an EndObject or PropertyName, but {tokenType} was encountered.");
-								var propertyName = reader.GetString();
-								if (reader.Read())
-									dynamicObject.Add(propertyName, ReadDynamicJsonObject(ref reader, options));
-								else throwNotEnoughJsonException(tokenType);
-							}
-						else throwNotEnoughJsonException(tokenType);
+						while (reader.Read() && (tokenType = reader.TokenType) != JsonTokenType.EndObject) {
+							// MUST be PropertyName
+							Debug.Assert(tokenType == JsonTokenType.PropertyName, $"The token immediately following StartObject *must* be an EndObject or PropertyName, but {tokenType} was encountered.");
+							var propertyName = reader.GetString();
+							if (reader.Read())
+								dynamicObject.Add(propertyName, ReadDynamicJsonObject(ref reader, options));
+							else throwNotEnoughJsonException(tokenType);
+						}
+						if (reader.TokenType != JsonTokenType.EndObject)
+							throwNotEnoughJsonException(tokenType);
 						return dynamicObject;
 					case JsonTokenType.String:
 						// TODO: do we need to worry about dates etc here?

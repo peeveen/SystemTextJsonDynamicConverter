@@ -4,21 +4,17 @@ using System.Text.Json.Serialization;
 namespace SystemTextJson.DynamicConverter.Test;
 
 [TestClass]
-public class Tests
-{
-	public async static Task<string> ReadTextFile(string filename)
-	{
+public class Tests {
+	public async static Task<string> ReadTextFile(string filename) {
 		return await File.ReadAllTextAsync(Path.Join("..", "..", "..", "json", filename));
 	}
 
-	public static async Task<T?> DeserializeJson<T>(string filename, Func<string, T?> deserializeFunc)
-	{
+	public static async Task<T?> DeserializeJson<T>(string filename, Func<string, T?> deserializeFunc) {
 		return deserializeFunc(await ReadTextFile(filename));
 	}
 
 	// Class to deserialize, including dynamic data.
-	class TestClass
-	{
+	class TestClass {
 		[JsonInclude]
 		[JsonPropertyName("property1")]
 		public string? Property1 { get; set; }
@@ -31,38 +27,32 @@ public class Tests
 		public string? Property2 { get; set; }
 	}
 
-	private void AssertArraysMatch<T>(ICollection<T> array1, ICollection<T> array2)
-	{
+	private void AssertArraysMatch<T>(ICollection<T> array1, ICollection<T> array2) {
 		var array1Length = array1.Count;
 		var array2Length = array2.Count;
 		Assert.AreEqual(array1Length, array2Length);
-		for (int f = 0; f < array1Length; ++f)
-		{
+		for (int f = 0; f < array1Length; ++f) {
 			var element1 = array1.ElementAt(f);
 			var element2 = array2.ElementAt(f);
 			Assert.AreEqual(element1, element2);
 		}
 	}
 
-	private void AssertObjectArraysMatch<T>(ICollection<T> array1, ICollection<T> array2)
-	{
+	private void AssertObjectArraysMatch<T>(ICollection<T> array1, ICollection<T> array2) {
 		var array1Length = array1.Count;
 		var array2Length = array2.Count;
 		Assert.AreEqual(array1Length, array2Length);
-		for (int f = 0; f < array1Length; ++f)
-		{
+		for (int f = 0; f < array1Length; ++f) {
 			var element1 = array1.ElementAt(f);
 			var element2 = array2.ElementAt(f);
-			if (element1 != null && element2 != null)
-			{
+			if (element1 != null && element2 != null) {
 				var props1 = element1.GetType().GetProperties();
 				var dictionary = element2 as IDictionary<string, dynamic>;
 				var props2 = dictionary?.Keys;
 				var propCount1 = props1.Length;
 				var propCount2 = props2?.Count;
 				Assert.AreEqual(propCount1, propCount2);
-				for (int g = 0; g < props1.Length; ++g)
-				{
+				for (int g = 0; g < props1.Length; ++g) {
 					var prop1 = props1[g];
 					var prop2 = props2?.ElementAt(g);
 					Assert.AreEqual(prop1.Name, prop2);
@@ -74,8 +64,7 @@ public class Tests
 		}
 	}
 
-	private void TestDeserializedObjectData(dynamic result)
-	{
+	private void TestDeserializedObjectData(dynamic result) {
 		Assert.IsNotNull(result);
 		Assert.AreEqual(true, result.booleanTrueTest);
 		Assert.AreEqual(false, result.booleanFalseTest);
@@ -85,22 +74,25 @@ public class Tests
 		Assert.AreEqual(null, result.nullTest);
 		var x = Object.Equals(1, result.integerArrayTest[0]);
 		AssertArraysMatch(new object[] { 1, 2, 3, 4 }, result.integerArrayTest);
-		for (int f = 0; f < result.floatArrayTest.Length; ++f)
-			Assert.IsTrue(1.1 * (f + 1) - result.floatArrayTest[f] <= 0.000001);
+		for (int f = 0; f < result.floatArrayTest.Length; ++f) {
+			Assert.IsTrue(result.floatArrayTest[f].GetType() == typeof(float) || result.floatArrayTest[f].GetType() == typeof(double));
+			Assert.IsTrue(1.1 * f - result.floatArrayTest[f] <= 0.000001);
+		}
 		AssertArraysMatch(new object[] { "a", "b", "c", "d" }, result.stringArrayTest);
 		AssertArraysMatch(new object[] { true, false, true, false }, result.booleanArrayTest);
 		AssertObjectArraysMatch(new[] { new { property = "thing1" }, new { property = "thing2" }, new { property = "thing3" }, new { property = "thing4" } }, result.objectArrayTest);
 		AssertArraysMatch(new object[] { 1, 2, 3, 4 }, result.nestedArrayTest[0]);
-		for (int f = 0; f < result.nestedArrayTest[1].Length; ++f)
-			Assert.IsTrue(1.1 * (f + 1) - result.nestedArrayTest[1][f] <= 0.000001);
+		for (int f = 0; f < result.nestedArrayTest[1].Length; ++f) {
+			Assert.IsTrue(result.nestedArrayTest[1][f].GetType() == typeof(float) || result.nestedArrayTest[1][f].GetType() == typeof(double));
+			Assert.IsTrue(1.1 * f - result.nestedArrayTest[1][f] <= 0.000001);
+		}
 		AssertArraysMatch(new object[] { "a", "b", "c", "d" }, result.nestedArrayTest[2]);
 		AssertArraysMatch(new object[] { true, false, true, false }, result.nestedArrayTest[3]);
 		AssertObjectArraysMatch(new[] { new { property = "thing1" }, new { property = "thing2" }, new { property = "thing3" }, new { property = "thing4" } }, result.nestedArrayTest[4]);
 	}
 
 	[TestMethod]
-	public async Task TestDeserialize()
-	{
+	public async Task TestDeserialize() {
 		var result = await DeserializeJson<TestClass>("test.json", json => JsonSerializer.Deserialize<TestClass>(json));
 		Assert.IsNotNull(result);
 		Assert.AreEqual("something", result.Property1);

@@ -21,16 +21,14 @@ namespace SystemTextJson.DynamicConverter {
 			if (gotLong)
 				return longVal;
 
-			// Must be a real number then
-			var gotFloat = reader.TryGetSingle(out var floatVal) && !Single.IsInfinity(floatVal);
-			var gotDouble = reader.TryGetDouble(out var doubleVal);
-			// TODO: do we need to worry about decimal?
-			if (gotFloat && gotDouble && floatVal == doubleVal)
-				return floatVal;
-			// TODO: I would prefer to treat any "Infinity" double results as strings, but calling
-			// reader.getString() when it has already parsed the token as a number results in an
-			// annoying exception. So I guess we'll just have to go To Infinity And Beyond!
-			return doubleVal;
+			// Must be a real number then.
+			// Let's not mess around with floats. We could try those
+			// first and compare them with the double result, but we'd find
+			// that some values look equal but float<->double comparisons
+			// fail due to tiny floating point inconsistencies. For example,
+			// 1.1, 2.2, 3.3, and 4.4 are all "inequal" between float and
+			// double, but 5.5 is equal.
+			return reader.GetDouble();
 		}
 
 		private void throwNotEnoughJsonException(JsonTokenType finalTokenType) => throw new JsonException($"Invalid JSON: ended with a {finalTokenType} token.");

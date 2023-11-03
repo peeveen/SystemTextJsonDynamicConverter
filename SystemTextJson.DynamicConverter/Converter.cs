@@ -31,7 +31,7 @@ namespace SystemTextJson.DynamicConverter {
 			return reader.GetDouble();
 		}
 
-		private void throwNotEnoughJsonException(JsonTokenType finalTokenType) => throw new JsonException($"Invalid JSON: ended with a {finalTokenType} token.");
+		private void ThrowNotEnoughJsonException(JsonTokenType finalTokenType) => throw new JsonException($"Invalid JSON: ended with a {finalTokenType} token.");
 		private dynamic ReadDynamicJsonObject(ref Utf8JsonReader reader, JsonSerializerOptions options) {
 			do {
 				var tokenType = reader.TokenType;
@@ -42,7 +42,7 @@ namespace SystemTextJson.DynamicConverter {
 							list.Add(ReadDynamicJsonObject(ref reader, options));
 						// If we ended with something other than an EndArray, we've run out of JSON.
 						if (reader.TokenType != JsonTokenType.EndArray)
-							throwNotEnoughJsonException(tokenType);
+							ThrowNotEnoughJsonException(tokenType);
 						return list.ToArray();
 					case JsonTokenType.StartObject:
 						var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
@@ -52,14 +52,29 @@ namespace SystemTextJson.DynamicConverter {
 							var propertyName = reader.GetString();
 							if (reader.Read())
 								dynamicObject.Add(propertyName, ReadDynamicJsonObject(ref reader, options));
-							else throwNotEnoughJsonException(tokenType);
+							else ThrowNotEnoughJsonException(tokenType);
 						}
 						if (reader.TokenType != JsonTokenType.EndObject)
-							throwNotEnoughJsonException(tokenType);
+							ThrowNotEnoughJsonException(tokenType);
 						return dynamicObject;
 					case JsonTokenType.String:
-						// TODO: do we need to worry about dates etc here?
-						return reader.GetString();
+						// Dates, DateTimeOffsets and TimeSpans are encoded as strings.
+						try {
+							return reader.GetDateTime();
+						} catch (Exception) {
+							try {
+								return reader.GetDateTimeOffset();
+							} catch (Exception) {
+								var str = reader.GetString();
+								try {
+									if (TimeSpan.TryParse(str, out var timespan))
+										return timespan;
+								} catch (Exception) {
+									// Fall through.
+								}
+								return str;
+							}
+						}
 					case JsonTokenType.Number:
 						return GetNumberFromReader(ref reader);
 					case JsonTokenType.True:

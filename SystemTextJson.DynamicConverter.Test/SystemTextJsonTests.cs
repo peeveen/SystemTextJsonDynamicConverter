@@ -20,14 +20,14 @@ public class Tests {
 		public string? Property1 { get; set; }
 		[JsonInclude]
 		[JsonPropertyName("dynamicData")]
-		[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.DynamicConverter.Converter))]
+		[JsonConverter(typeof(Converter))]
 		public dynamic? DynamicData { get; set; }
 		[JsonInclude]
 		[JsonPropertyName("property2")]
 		public string? Property2 { get; set; }
 	}
 
-	private void AssertArraysMatch<T>(ICollection<T> array1, ICollection<T> array2) {
+	private static void AssertArraysMatch<T>(ICollection<T> array1, ICollection<T> array2) {
 		var array1Length = array1.Count;
 		var array2Length = array2.Count;
 		Assert.AreEqual(array1Length, array2Length);
@@ -38,7 +38,7 @@ public class Tests {
 		}
 	}
 
-	private void AssertObjectArraysMatch<T>(ICollection<T> array1, ICollection<T> array2) {
+	private static void AssertObjectArraysMatch<T>(ICollection<T> array1, ICollection<T> array2) {
 		var array1Length = array1.Count;
 		var array2Length = array2.Count;
 		Assert.AreEqual(array1Length, array2Length);
@@ -72,7 +72,11 @@ public class Tests {
 		Assert.AreEqual(123.4, result.floatTest);
 		Assert.AreEqual("abcd", result.stringTest);
 		Assert.AreEqual(null, result.nullTest);
-		var x = Object.Equals(1, result.integerArrayTest[0]);
+		Assert.AreEqual(new DateTime(2023, 04, 09), result.date);
+		Assert.AreEqual(new DateTime(2023, 04, 09, 01, 23, 45), result.dateTime);
+		Assert.AreEqual(new DateTime(2023, 04, 09, 00, 23, 45), result.dateTimeOffset);
+		Assert.AreEqual(new TimeSpan(0, 0, 2, 23, 453, 983), result.timespan);
+		var x = Equals(1, result.integerArrayTest[0]);
 		AssertArraysMatch(new object[] { 1, 2, 3, 4 }, result.integerArrayTest);
 		for (int f = 0; f < result.floatArrayTest.Length; ++f) {
 			Assert.IsTrue(result.floatArrayTest[f].GetType() == typeof(float) || result.floatArrayTest[f].GetType() == typeof(double));
@@ -93,7 +97,7 @@ public class Tests {
 
 	[TestMethod]
 	public async Task TestDeserialize() {
-		var result = await DeserializeJson<TestClass>("test.json", json => JsonSerializer.Deserialize<TestClass>(json));
+		var result = await DeserializeJson("test.json", json => JsonSerializer.Deserialize<TestClass>(json));
 		Assert.IsNotNull(result);
 		Assert.AreEqual("something", result.Property1);
 		Assert.AreEqual("somethingElse", result.Property2);

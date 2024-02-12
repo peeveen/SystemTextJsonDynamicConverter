@@ -108,7 +108,11 @@ namespace SystemTextJson.DynamicConverter {
 			Utf8JsonWriter writer,
 			dynamic value,
 			JsonSerializerOptions options) {
-			JsonSerializer.Serialize(writer, value, options);
+			// Remove this converter to prevent recursion.
+			// Standard serializer has no problem writing dynamics.
+			var limitedOptions = new JsonSerializerOptions(options);
+			limitedOptions.Converters.Remove(this);
+			JsonSerializer.Serialize(writer, value, limitedOptions);
 		}
 	}
 }

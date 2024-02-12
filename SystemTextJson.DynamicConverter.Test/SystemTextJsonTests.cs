@@ -1,11 +1,16 @@
+using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace SystemTextJson.DynamicConverter.Test;
 
 [TestClass]
-public class Tests {
-	public async static Task<string> ReadTextFile(string filename) {
+public class SystemTextJsonTests {
+	private const string QueryString = "?arg=1&arg=2&flam=blee&thing=";
+
+	public static async Task<string> ReadTextFile(string filename) {
 		return await File.ReadAllTextAsync(Path.Join("..", "..", "..", "json", filename));
 	}
 
@@ -71,7 +76,7 @@ public class Tests {
 		Assert.AreEqual(1234, result.integerTest);
 		Assert.AreEqual(123.4, result.floatTest);
 		Assert.AreEqual("abcd", result.stringTest);
-		Assert.AreEqual(null, result.nullTest);
+		Assert.AreEqual(null, result.nullTest as object);
 		Assert.AreEqual(new DateTime(2023, 04, 09), result.date);
 		Assert.AreEqual(new DateTime(2023, 04, 09, 01, 23, 45), result.dateTime);
 		Assert.AreEqual(new DateTime(2023, 04, 09, 00, 23, 45), result.dateTimeOffset);
@@ -93,6 +98,26 @@ public class Tests {
 		AssertArraysMatch(new object[] { "a", "b", "c", "d" }, result.nestedArrayTest[2]);
 		AssertArraysMatch(new object[] { true, false, true, false }, result.nestedArrayTest[3]);
 		AssertObjectArraysMatch(new[] { new { property = "thing1" }, new { property = "thing2" }, new { property = "thing3" }, new { property = "thing4" } }, result.nestedArrayTest[4]);
+	}
+
+	public class TestObject {
+		public TestObject(IReadOnlyCollection<string> strings, dynamic dynamicData) {
+			Strings = strings;
+			DynamicData = dynamicData;
+		}
+		public IReadOnlyCollection<string> Strings { get; set; }
+		public dynamic DynamicData { get; set; }
+	}
+
+	[TestMethod]
+	public void TestSerialization() {
+		var dynamicData = new { UserName = "PC BIL", Tenant = "BIL Enterprises", Group = "Management", Level = 10 };
+		var testObject = new TestObject(["hello", "goodbye"], dynamicData);
+		var serializationOptions = new JsonSerializerOptions();
+		serializationOptions.Converters.Add(new Converter());
+		var serializedJson = JsonSerializer.Serialize(testObject, serializationOptions);
+		var deserializedDescriptor = JsonSerializer.Deserialize<TestObject>(serializedJson, serializationOptions);
+		Assert.IsNotNull(deserializedDescriptor);
 	}
 
 	[TestMethod]

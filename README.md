@@ -23,3 +23,11 @@ class MyClass {
 var result = JsonSerializer.Deserialize<MyClass>(json);
 var val = result.MyDynamicData.some._dynamic.property.somewhere;
 ```
+
+Alternatively ...
+
+```csharp
+services.AddControllers().AddJsonOptions(options =>
+	options.JsonSerializerOptions.Converters.Add(new SystemTextJson.DynamicConverter.Converter())
+);
+```

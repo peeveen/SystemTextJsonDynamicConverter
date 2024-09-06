@@ -59,22 +59,23 @@ namespace SystemTextJson.DynamicConverter {
 						return dynamicObject;
 					case JsonTokenType.String:
 						// Dates, DateTimeOffsets and TimeSpans are encoded as strings.
-						try {
-							return reader.GetDateTime();
-						} catch (Exception) {
+						var str = reader.GetString();
+						if (!IsBasicNumber(str))
 							try {
-								return reader.GetDateTimeOffset();
+								return reader.GetDateTime();
 							} catch (Exception) {
-								var str = reader.GetString();
 								try {
-									if (TimeSpan.TryParse(str, out var timespan))
-										return timespan;
+									return reader.GetDateTimeOffset();
 								} catch (Exception) {
-									// Fall through.
+									try {
+										if (TimeSpan.TryParse(str, out var timespan))
+											return timespan;
+									} catch (Exception) {
+										// Fall through.
+									}
 								}
-								return str;
 							}
-						}
+						return str;
 					case JsonTokenType.Number:
 						return GetNumberFromReader(ref reader);
 					case JsonTokenType.True:
@@ -97,12 +98,12 @@ namespace SystemTextJson.DynamicConverter {
 			throw new JsonException($"No actual data was read.");
 		}
 
+		private static bool IsBasicNumber(string str) => long.TryParse(str, out _) || double.TryParse(str, out _);
+
 		public override dynamic Read(
 			ref Utf8JsonReader reader,
 			Type typeToConvert,
-			JsonSerializerOptions options) {
-			return ReadDynamicJsonObject(ref reader, options);
-		}
+			JsonSerializerOptions options) => ReadDynamicJsonObject(ref reader, options);
 
 		public override void Write(
 			Utf8JsonWriter writer,

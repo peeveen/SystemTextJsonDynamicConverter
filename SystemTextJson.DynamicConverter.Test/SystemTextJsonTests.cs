@@ -76,6 +76,7 @@ public class SystemTextJsonTests {
 		Assert.AreEqual(1234, result.integerTest);
 		Assert.AreEqual(123.4, result.floatTest);
 		Assert.AreEqual("abcd", result.stringTest);
+		Assert.AreEqual("100", result.numericStringTest);
 		Assert.AreEqual(null, result.nullTest as object);
 		Assert.AreEqual(new DateTime(2023, 04, 09), result.date);
 		Assert.AreEqual(new DateTime(2023, 04, 09, 01, 23, 45), result.dateTime);

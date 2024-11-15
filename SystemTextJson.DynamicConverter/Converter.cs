@@ -60,21 +60,14 @@ namespace SystemTextJson.DynamicConverter {
 					case JsonTokenType.String:
 						// Dates, DateTimeOffsets and TimeSpans are encoded as strings.
 						var str = reader.GetString();
-						if (!IsBasicNumber(str))
-							try {
-								return reader.GetDateTime();
-							} catch (Exception) {
-								try {
-									return reader.GetDateTimeOffset();
-								} catch (Exception) {
-									try {
-										if (TimeSpan.TryParse(str, out var timespan))
-											return timespan;
-									} catch (Exception) {
-										// Fall through.
-									}
-								}
-							}
+						if (!IsBasicNumber(str)) {
+							if (reader.TryGetDateTime(out var dateTime))
+								return dateTime;
+							if (reader.TryGetDateTimeOffset(out var dateTimeOffset))
+								return dateTimeOffset;
+							if (TimeSpan.TryParse(str, out var timespan))
+								return timespan;
+						}
 						return str;
 					case JsonTokenType.Number:
 						return GetNumberFromReader(ref reader);

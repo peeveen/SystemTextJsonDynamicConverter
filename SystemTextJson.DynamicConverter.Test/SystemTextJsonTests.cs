@@ -1,8 +1,5 @@
-using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace SystemTextJson.DynamicConverter.Test;
 
@@ -122,7 +119,7 @@ public class SystemTextJsonTests {
 	}
 
 	[TestMethod]
-	public async Task TestDeserialize() {
+	public async Task TestDeserialization() {
 		var result = await DeserializeJson("test.json", json => JsonSerializer.Deserialize<TestClass>(json));
 		Assert.IsNotNull(result);
 		Assert.AreEqual("something", result.Property1);
@@ -130,5 +127,20 @@ public class SystemTextJsonTests {
 		TestDeserializedObjectData(result.DynamicData);
 		TestDeserializedObjectData(result.DynamicData?.objectTest);
 		TestDeserializedObjectData(result.DynamicData?.objectTest?.nestedObjectTest);
+	}
+
+	[TestMethod]
+	public void TestArraySerialization() {
+		var dynamicData = new { UserName = "PC BIL", Tenant = "BIL Enterprises", Group = "Management", Level = 10 };
+		var testObject = new dynamic[] { new TestObject(["hello", "goodbye"], dynamicData), dynamicData };
+		var serializationOptions = new JsonSerializerOptions();
+		serializationOptions.Converters.Add(new Converter());
+		serializationOptions.Converters.Add(new CollectionConverter());
+		var serializedJson = JsonSerializer.Serialize(testObject, serializationOptions);
+		var deserializedArray = JsonSerializer.Deserialize<dynamic[]>(serializedJson, serializationOptions);
+		Assert.IsNotNull(deserializedArray);
+		Assert.AreEqual(2, deserializedArray.Length);
+		Assert.AreEqual(deserializedArray[0].Strings[0], "hello");
+		Assert.AreEqual(deserializedArray[1].Tenant, "BIL Enterprises");
 	}
 }

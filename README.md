@@ -16,6 +16,10 @@ class MyClass {
 	[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.DynamicConverter.Converter))]
 	public dynamic MyDynamicData { get; set; }
 
+	[JsonInclude]
+	[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.DynamicConverter.CollectionConverter))]
+	public dynamic[] MyDynamicDataArray { get; set; }
+
 	... etc ...
 
 }

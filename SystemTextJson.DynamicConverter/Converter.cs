@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SystemTextJson.DynamicConverter {
 	public class Converter : JsonConverter<dynamic> {
-		private dynamic GetNumberFromReader(ref Utf8JsonReader reader) {
+		private static dynamic GetNumberFromReader(ref Utf8JsonReader reader) {
 			// Try to read it an integer first.
 			// Might as well use the smallest type we can get away with.
 			// TODO: perhaps make this behavior configurable via constructor params.
@@ -31,8 +31,8 @@ namespace SystemTextJson.DynamicConverter {
 			return reader.GetDouble();
 		}
 
-		private void ThrowNotEnoughJsonException(JsonTokenType finalTokenType) => throw new JsonException($"Invalid JSON: ended with a {finalTokenType} token.");
-		private dynamic ReadDynamicJsonObject(ref Utf8JsonReader reader, JsonSerializerOptions options) {
+		private static void ThrowNotEnoughJsonException(JsonTokenType finalTokenType) => throw new JsonException($"Invalid JSON: ended with a {finalTokenType} token.");
+		internal static dynamic ReadDynamicJsonObject(ref Utf8JsonReader reader, JsonSerializerOptions options) {
 			do {
 				var tokenType = reader.TokenType;
 				switch (tokenType) {

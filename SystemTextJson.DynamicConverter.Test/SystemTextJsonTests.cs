@@ -112,7 +112,7 @@ public class SystemTextJsonTests {
 		var dynamicData = new { UserName = "PC BIL", Tenant = "BIL Enterprises", Group = "Management", Level = 10 };
 		var testObject = new TestObject(["hello", "goodbye"], dynamicData);
 		var serializationOptions = new JsonSerializerOptions();
-		serializationOptions.Converters.Add(new Converter());
+		serializationOptions.Converters.Add(Converter.Instance);
 		var serializedJson = JsonSerializer.Serialize(testObject, serializationOptions);
 		var deserializedDescriptor = JsonSerializer.Deserialize<TestObject>(serializedJson, serializationOptions);
 		Assert.IsNotNull(deserializedDescriptor);
@@ -134,8 +134,8 @@ public class SystemTextJsonTests {
 		var dynamicData = new { UserName = "PC BIL", Tenant = "BIL Enterprises", Group = "Management", Level = 10 };
 		var testObject = new dynamic[] { new TestObject(["hello", "goodbye"], dynamicData), dynamicData };
 		var serializationOptions = new JsonSerializerOptions();
-		serializationOptions.Converters.Add(new Converter());
-		serializationOptions.Converters.Add(new CollectionConverter());
+		serializationOptions.Converters.Add(Converter.Instance);
+		serializationOptions.Converters.Add(CollectionConverter.Instance);
 		var serializedJson = JsonSerializer.Serialize(testObject, serializationOptions);
 		var deserializedArray = JsonSerializer.Deserialize<dynamic[]>(serializedJson, serializationOptions);
 		Assert.IsNotNull(deserializedArray);

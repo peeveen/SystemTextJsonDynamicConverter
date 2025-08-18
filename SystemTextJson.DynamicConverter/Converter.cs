@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 namespace SystemTextJson.DynamicConverter {
 	public class Converter : JsonConverter<dynamic> {
+		public static readonly Converter Instance = new Converter();
+
 		private static dynamic GetNumberFromReader(ref Utf8JsonReader reader) {
 			// Try to read it an integer first.
 			// Might as well use the smallest type we can get away with.

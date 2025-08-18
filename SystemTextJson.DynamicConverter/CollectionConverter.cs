@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace SystemTextJson.DynamicConverter {
 	public class CollectionConverter : JsonConverter<dynamic[]> {
+		public static readonly CollectionConverter Instance = new CollectionConverter();
+
 		public override dynamic[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
 			if (reader.TokenType != JsonTokenType.StartArray) {
 				reader.Skip();

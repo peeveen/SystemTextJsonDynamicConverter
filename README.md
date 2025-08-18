@@ -31,7 +31,8 @@ var val = result.MyDynamicData.some._dynamic.property.somewhere;
 Alternatively ...
 
 ```csharp
-services.AddControllers().AddJsonOptions(options =>
-	options.JsonSerializerOptions.Converters.Add(new SystemTextJson.DynamicConverter.Converter())
-);
+services.AddControllers().AddJsonOptions(options => {
+	options.JsonSerializerOptions.Converters.Add(SystemTextJson.DynamicConverter.Converter.Instance); // or new() ...
+	options.JsonSerializerOptions.Converters.Add(SystemTextJson.DynamicConverter.CollectionConverter.Instance); // or new() ...
+});
 ```

@@ -7,8 +7,6 @@ namespace SystemTextJson.DynamicConverter.Test;
 
 [TestClass]
 public class SystemTextJsonTests {
-	private const string QueryString = "?arg=1&arg=2&flam=blee&thing=";
-
 	public static async Task<string> ReadTextFile(string filename) {
 		return await File.ReadAllTextAsync(Path.Join("..", "..", "..", "json", filename));
 	}

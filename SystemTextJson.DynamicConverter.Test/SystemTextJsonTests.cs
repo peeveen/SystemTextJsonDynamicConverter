@@ -1,3 +1,5 @@
+using System.Dynamic;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -98,23 +100,19 @@ public class SystemTextJsonTests {
 		AssertObjectArraysMatch(new[] { new { property = "thing1" }, new { property = "thing2" }, new { property = "thing3" }, new { property = "thing4" } }, result.nestedArrayTest[4]);
 	}
 
-	public class TestObject {
-		public TestObject(IReadOnlyCollection<string> strings, dynamic dynamicData) {
-			Strings = strings;
-			DynamicData = dynamicData;
-		}
-		public IReadOnlyCollection<string> Strings { get; set; }
-		public dynamic DynamicData { get; set; }
+	public class TestObject(IReadOnlyCollection<string> strings, dynamic dynamicData) {
+		public IReadOnlyCollection<string> Strings { get; set; } = strings;
+		public dynamic DynamicData { get; set; } = dynamicData;
 	}
 
 	[TestMethod]
 	public void TestSerialization() {
 		var dynamicData = new { UserName = "PC BIL", Tenant = "BIL Enterprises", Group = "Management", Level = 10 };
 		var testObject = new TestObject(["hello", "goodbye"], dynamicData);
-		var serializationOptions = new JsonSerializerOptions();
-		serializationOptions.Converters.Add(Converter.Instance);
-		var serializedJson = JsonSerializer.Serialize(testObject, serializationOptions);
-		var deserializedDescriptor = JsonSerializer.Deserialize<TestObject>(serializedJson, serializationOptions);
+		var serializerOptions = new JsonSerializerOptions();
+		serializerOptions.Converters.Add(Converter.Instance);
+		var serializedJson = JsonSerializer.Serialize(testObject, serializerOptions);
+		var deserializedDescriptor = JsonSerializer.Deserialize<TestObject>(serializedJson, serializerOptions);
 		Assert.IsNotNull(deserializedDescriptor);
 	}
 
@@ -133,14 +131,31 @@ public class SystemTextJsonTests {
 	public void TestArraySerialization() {
 		var dynamicData = new { UserName = "PC BIL", Tenant = "BIL Enterprises", Group = "Management", Level = 10 };
 		var testObject = new dynamic[] { new TestObject(["hello", "goodbye"], dynamicData), dynamicData };
-		var serializationOptions = new JsonSerializerOptions();
-		serializationOptions.Converters.Add(Converter.Instance);
-		serializationOptions.Converters.Add(CollectionConverter.Instance);
-		var serializedJson = JsonSerializer.Serialize(testObject, serializationOptions);
-		var deserializedArray = JsonSerializer.Deserialize<dynamic[]>(serializedJson, serializationOptions);
+		var serializerOptions = new JsonSerializerOptions();
+		serializerOptions.Converters.Add(Converter.Instance);
+		serializerOptions.Converters.Add(CollectionConverter.Instance);
+		var serializedJson = JsonSerializer.Serialize(testObject, serializerOptions);
+		var deserializedArray = JsonSerializer.Deserialize<dynamic[]>(serializedJson, serializerOptions);
 		Assert.IsNotNull(deserializedArray);
 		Assert.AreEqual(2, deserializedArray.Length);
 		Assert.AreEqual(deserializedArray[0].Strings[0], "hello");
 		Assert.AreEqual(deserializedArray[1].Tenant, "BIL Enterprises");
+	}
+
+	[TestMethod]
+	public async Task TestAsyncEnumerable() {
+		var httpResponse = new HttpResponseMessage {
+			Content = new StringContent(await ReadTextFile("dynamicArray.json"))
+		};
+		var serializerOptions = new JsonSerializerOptions();
+		serializerOptions.Converters.Add(Converter.Instance);
+		serializerOptions.Converters.Add(CollectionConverter.Instance);
+		var asyncEnumerable = httpResponse.Content.ReadFromJsonAsAsyncEnumerable<dynamic>(serializerOptions);
+		// The async enumerable deserialization seems to operate on "chunks" of JSON data at a time,
+		// rather than one JSON item at a time. The number of items that it deserializes each time (before
+		// going back to the converter to deserialize more) seems dependent on the amount of data/bytes in
+		// each item.
+		await foreach (var item in asyncEnumerable)
+			Assert.IsTrue(item is ExpandoObject);
 	}
 }

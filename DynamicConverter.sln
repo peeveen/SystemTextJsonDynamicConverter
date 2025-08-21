@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemTextJson.DynamicConve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemTextJson.DynamicConverter.Test", "SystemTextJson.DynamicConverter.Test\SystemTextJson.DynamicConverter.Test.csproj", "{EF7E197C-7EB3-45EA-9857-50538D1CFA9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBD}") = "SystemTextJson.DynamicConverter.Benchmark", "SystemTextJson.DynamicConverter.Benchmark\SystemTextJson.DynamicConverter.Benchmark.csproj", "{EF7E197C-7EB3-45EA-9857-50538D1CFA9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{EF7E197C-7EB3-45EA-9857-50538D1CFA9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF7E197C-7EB3-45EA-9857-50538D1CFA9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF7E197C-7EB3-45EA-9857-50538D1CFA9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF7E197C-7EB3-45EA-9857-50538D1CFA9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF7E197C-7EB3-45EA-9857-50538D1CFA9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF7E197C-7EB3-45EA-9857-50538D1CFA9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF7E197C-7EB3-45EA-9857-50538D1CFA9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

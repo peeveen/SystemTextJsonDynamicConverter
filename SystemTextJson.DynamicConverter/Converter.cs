@@ -17,8 +17,7 @@ namespace SystemTextJson.DynamicConverter {
 			// TODO: do we need to worry about byte/sbyte, short?
 			var gotInt = reader.TryGetInt32(out var intVal);
 			var gotLong = reader.TryGetInt64(out var longVal);
-			var intEqualsLong = gotInt && gotLong && intVal == longVal;
-			if (intEqualsLong)
+			if (gotInt && gotLong && intVal == longVal)
 				return intVal;
 			if (gotLong)
 				return longVal;
@@ -85,7 +84,7 @@ namespace SystemTextJson.DynamicConverter {
 					case JsonTokenType.PropertyName:
 						throw new JsonException($"{tokenType} encountered outside of appropriate processing loop.");
 					case JsonTokenType.Comment:
-					// JSON can have comments? Who knew. Ignore these anyway.
+					// JSON can have comments? Who knew? Ignore these anyway.
 					case JsonTokenType.None:
 						break;
 				}

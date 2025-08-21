@@ -15,11 +15,9 @@ namespace SystemTextJson.DynamicConverter {
 			// TODO: perhaps make this behavior configurable via constructor params.
 			// TODO: do we need to worry about unsigned types?
 			// TODO: do we need to worry about byte/sbyte, short?
-			var gotInt = reader.TryGetInt32(out var intVal);
-			var gotLong = reader.TryGetInt64(out var longVal);
-			if (gotInt && gotLong && intVal == longVal)
+			if (reader.TryGetInt32(out var intVal))
 				return intVal;
-			if (gotLong)
+			if (reader.TryGetInt64(out var longVal))
 				return longVal;
 
 			// Must be a real number then.
@@ -46,7 +44,7 @@ namespace SystemTextJson.DynamicConverter {
 							ThrowNotEnoughJsonException(tokenType);
 						return list.ToArray();
 					case JsonTokenType.StartObject:
-						var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
+						IDictionary<string, object> dynamicObject = new ExpandoObject();
 						while (reader.Read() && (tokenType = reader.TokenType) != JsonTokenType.EndObject) {
 							// MUST be PropertyName
 							Debug.Assert(tokenType == JsonTokenType.PropertyName, $"The token immediately following StartObject *must* be an EndObject or PropertyName, but {tokenType} was encountered.");
@@ -59,9 +57,14 @@ namespace SystemTextJson.DynamicConverter {
 							ThrowNotEnoughJsonException(tokenType);
 						return dynamicObject;
 					case JsonTokenType.String:
-						// Dates, DateTimeOffsets and TimeSpans are encoded as strings.
 						var str = reader.GetString();
-						if (!IsBasicNumber(str)) {
+						// Dates, DateTimeOffsets and TimeSpans are encoded as strings
+						// using ISO 8601-1:2019 representation, which uses hyphens
+						// to separate date parts, and colons to separate time parts.
+						// So if the string contains any of these, it MIGHT be parsable
+						// as a date/offset/timespan.
+						// There is no faster way to know than to just try it.
+						if (str.Contains(":") || str.Contains("-")) {
 							if (reader.TryGetDateTime(out var dateTime))
 								return dateTime;
 							if (reader.TryGetDateTimeOffset(out var dateTimeOffset))
@@ -91,8 +94,6 @@ namespace SystemTextJson.DynamicConverter {
 			} while (reader.Read());
 			throw new JsonException($"No actual data was read.");
 		}
-
-		private static bool IsBasicNumber(string str) => long.TryParse(str, out _) || double.TryParse(str, out _);
 
 		public override dynamic Read(
 			ref Utf8JsonReader reader,

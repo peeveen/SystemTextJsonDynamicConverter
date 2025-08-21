@@ -71,6 +71,7 @@ public class SystemTextJsonTests {
 		Assert.AreEqual(true, result.booleanTrueTest);
 		Assert.AreEqual(false, result.booleanFalseTest);
 		Assert.AreEqual(1234, result.integerTest);
+		Assert.AreEqual(2147483648L, result.longTest); // Int32.MaxValue + 1
 		Assert.AreEqual(123.4, result.floatTest);
 		Assert.AreEqual("abcd", result.stringTest);
 		Assert.AreEqual("100", result.numericStringTest);

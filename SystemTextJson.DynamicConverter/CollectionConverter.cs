@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -12,12 +11,7 @@ namespace SystemTextJson.DynamicConverter {
 				reader.Skip();
 				return null;
 			}
-			var list = new List<dynamic>();
-			while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
-				var item = Converter.ReadDynamicJsonObject(ref reader, options);
-				list.Add(item);
-			}
-			return list.ToArray();
+			return Converter.ReadDynamicJsonArray(ref reader, options);
 		}
 
 		public override void Write(Utf8JsonWriter writer, dynamic[] value, JsonSerializerOptions options) {

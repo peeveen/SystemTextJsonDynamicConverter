@@ -30,19 +30,23 @@ namespace SystemTextJson.DynamicConverter {
 			return reader.GetDouble();
 		}
 
+		internal static dynamic[] ReadDynamicJsonArray(ref Utf8JsonReader reader, JsonSerializerOptions options) {
+			var list = new List<dynamic>();
+			while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+				list.Add(Converter.ReadDynamicJsonObject(ref reader, options));
+			// If we ended with something other than an EndArray, we've run out of JSON.
+			if (reader.TokenType != JsonTokenType.EndArray)
+				ThrowNotEnoughJsonException(reader.TokenType);
+			return list.ToArray();
+		}
+
 		private static void ThrowNotEnoughJsonException(JsonTokenType finalTokenType) => throw new JsonException($"Invalid JSON: ended with a {finalTokenType} token.");
 		internal static dynamic ReadDynamicJsonObject(ref Utf8JsonReader reader, JsonSerializerOptions options) {
 			do {
 				var tokenType = reader.TokenType;
 				switch (tokenType) {
 					case JsonTokenType.StartArray:
-						var list = new List<dynamic>();
-						while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
-							list.Add(ReadDynamicJsonObject(ref reader, options));
-						// If we ended with something other than an EndArray, we've run out of JSON.
-						if (reader.TokenType != JsonTokenType.EndArray)
-							ThrowNotEnoughJsonException(tokenType);
-						return list.ToArray();
+						return ReadDynamicJsonArray(ref reader, options);
 					case JsonTokenType.StartObject:
 						IDictionary<string, object> dynamicObject = new ExpandoObject();
 						while (reader.Read() && (tokenType = reader.TokenType) != JsonTokenType.EndObject) {

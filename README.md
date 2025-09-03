@@ -1,3 +1,5 @@
+# Absorbed by [this project](https://github.com/peeveen/dotnet-utils)
+
 # System.Text.Json Dynamic Converter
 
 Deserialize data into a `dynamic` type when using `System.Text.Json`.
